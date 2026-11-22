@@ -154,12 +154,19 @@ export const ManageGroupsPage = () => {
                 </div>
               </div>
 
-              <div className="mt-5 pt-4 border-t border-slate-100 flex justify-end">
+              <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
+                <Link
+                  to={`/admin/groups/${group.id}`}
+                  className="inline-flex items-center text-xs font-semibold text-slate-700 hover:text-indigo-600"
+                >
+                  <Eye className="w-3.5 h-3.5 mr-1" />
+                  Group Details
+                </Link>
                 <Link
                   to={`/admin/submissions?search=${encodeURIComponent(group.name)}`}
                   className="inline-flex items-center text-xs font-semibold text-indigo-600 hover:text-indigo-700"
                 >
-                  View Group Submissions
+                  Submissions
                   <ChevronRight className="w-4 h-4 ml-1" />
                 </Link>
               </div>

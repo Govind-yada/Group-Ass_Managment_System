@@ -29,6 +29,7 @@ import { ManageAssignmentsPage } from './pages/admin/ManageAssignmentsPage';
 import { CreateAssignmentPage } from './pages/admin/CreateAssignmentPage';
 import { EditAssignmentPage } from './pages/admin/EditAssignmentPage';
 import { ManageGroupsPage } from './pages/admin/ManageGroupsPage';
+import { GroupDetailsPage } from './pages/admin/GroupDetailsPage';
 import { SubmissionMonitoringPage } from './pages/admin/SubmissionMonitoringPage';
 import { AdminAnalyticsPage } from './pages/admin/AdminAnalyticsPage';
 import { AdminProfilePage } from './pages/admin/AdminProfilePage';
@@ -91,6 +92,7 @@ export default function App() {
                 <Route path="/admin/assignments/new" element={<CreateAssignmentPage />} />
                 <Route path="/admin/assignments/edit/:id" element={<EditAssignmentPage />} />
                 <Route path="/admin/groups" element={<ManageGroupsPage />} />
+                <Route path="/admin/groups/:id" element={<GroupDetailsPage />} />
                 <Route path="/admin/submissions" element={<SubmissionMonitoringPage />} />
                 <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
                 <Route path="/admin/profile" element={<AdminProfilePage />} />
