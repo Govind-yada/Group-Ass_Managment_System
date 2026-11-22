@@ -1,0 +1,141 @@
+// Joineazy PostgreSQL Database Schema (Prisma)
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+enum TargetType {
+  ALL
+  GROUPS
+}
+
+enum SubmissionStatus {
+  PENDING
+  SUBMITTED
+}
+
+model User {
+  id           String        @id @default(uuid())
+  name         String
+  email        String        @unique
+  passwordHash String        @map("password_hash")
+  role         Role          @default(STUDENT)
+  studentId    String?       @unique @map("student_id")
+  avatar       String?
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  // Relationships
+  ledGroups       Group[]         @relation("GroupLeader")
+  groupMembership GroupMember?
+  createdAssignments Assignment[] @relation("AssignmentCreator")
+  submissions     Submission[]    @relation("SubmittedBy")
+  activityLogs    ActivityLog[]
+
+  @@map("users")
+}
+
+model Group {
+  id         String   @id @default(uuid())
+  name       String   @unique
+  code       String   @unique
+  leaderId   String   @map("leader_id")
+  maxMembers Int      @default(5) @map("max_members")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  // Relationships
+  leader           User              @relation("GroupLeader", fields: [leaderId], references: [id], onDelete: Restrict)
+  members          GroupMember[]
+  assignmentGroups AssignmentGroup[]
+  submissions      Submission[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  id        String   @id @default(uuid())
+  groupId   String   @map("group_id")
+  userId    String   @unique @map("user_id") // Strict: A student can belong to only 1 group
+  joinedAt  DateTime @default(now()) @map("joined_at")
+
+  // Relationships
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("group_members")
+}
+
+model Assignment {
+  id           String     @id @default(uuid())
+  title        String
+  description  String     @db.Text
+  dueDate      DateTime   @map("due_date")
+  onedriveUrl  String     @map("onedrive_url")
+  targetType   TargetType @default(ALL) @map("target_type")
+  createdById  String     @map("created_by")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  // Relationships
+  creator          User              @relation("AssignmentCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  assignmentGroups AssignmentGroup[]
+  submissions      Submission[]
+
+  @@map("assignments")
+}
+
+model AssignmentGroup {
+  id           String @id @default(uuid())
+  assignmentId String @map("assignment_id")
+  groupId      String @map("group_id")
+
+  // Relationships
+  assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  group      Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([assignmentId, groupId])
+  @@map("assignment_groups")
+}
+
+model Submission {
+  id           String           @id @default(uuid())
+  assignmentId String           @map("assignment_id")
+  groupId      String           @map("group_id")
+  status       SubmissionStatus @default(PENDING)
+  submittedById String?         @map("submitted_by")
+  submittedAt  DateTime?        @map("submitted_at")
+  notes        String?          @db.Text
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
+
+  // Relationships
+  assignment  Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  group       Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  submittedBy User?      @relation("SubmittedBy", fields: [submittedById], references: [id], onDelete: SetNull)
+
+  @@unique([assignmentId, groupId]) // Exactly one submission record per group per assignment
+  @@map("submissions")
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String?  @map("user_id")
+  action    String
+  details   String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relationships
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("activity_logs")
+}
