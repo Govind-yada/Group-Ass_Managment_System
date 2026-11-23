@@ -35,11 +35,9 @@ services:
         value: "*"
 
   # 2. Joineazy Frontend SPA Static Site
-  - type: web
+  - type: static
     name: joineazy-frontend
-    runtime: static
     rootDir: frontend
-    plan: free
     buildCommand: npm install && npm run build
     staticPublishPath: dist
     routes:
