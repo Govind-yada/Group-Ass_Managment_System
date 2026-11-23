@@ -18,9 +18,21 @@ async function initDatabase() {
   // Try standard PostgreSQL pool if DATABASE_URL is configured
   if (databaseUrl && process.env.USE_PGLITE !== 'true') {
     try {
+      const isRemote =
+        databaseUrl.includes('render.com') ||
+        databaseUrl.includes('supabase') ||
+        databaseUrl.includes('neon.tech') ||
+        databaseUrl.includes('sslmode=require') ||
+        (process.env.NODE_ENV === 'production' &&
+          !databaseUrl.includes('localhost') &&
+          !databaseUrl.includes('127.0.0.1') &&
+          !databaseUrl.includes('@db:') &&
+          !databaseUrl.includes('@postgres:'));
+
       const pool = new Pool({
         connectionString: databaseUrl,
-        connectionTimeoutMillis: 2000,
+        connectionTimeoutMillis: 5000,
+        ssl: isRemote ? { rejectUnauthorized: false } : undefined,
       });
 
       // Quick test query to verify connection

@@ -13,8 +13,14 @@ const app = express();
 app.use(helmet());
 
 // Enable CORS
+const configuredClients = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+
 const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:5173',
+  ...configuredClients,
+  'http://localhost:5173',
   'http://localhost:3000',
   'http://127.0.0.1:5173',
 ];
@@ -24,7 +30,14 @@ app.use(
     origin: (origin, callback) => {
       // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+      if (
+        process.env.CLIENT_URL === '*' ||
+        process.env.NODE_ENV !== 'production' ||
+        allowedOrigins.indexOf(origin) !== -1 ||
+        origin.endsWith('.onrender.com') ||
+        origin.endsWith('.vercel.app') ||
+        origin.endsWith('.netlify.app')
+      ) {
         return callback(null, true);
       }
       return callback(new Error('CORS policy does not allow access from this origin.'));
