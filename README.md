@@ -4,9 +4,14 @@
 [![Backend Tests](https://img.shields.io/badge/tests-10%20passed-success.svg)]()
 [![Stack](https://img.shields.io/badge/stack-React%20%7C%20Express%20%7C%20PostgreSQL%20%7C%20Prisma-indigo.svg)]()
 [![License](https://img.shields.io/badge/license-ISC-blue.svg)]()
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Govind-yada/Group-Ass_Managment_System)
+[![Render Deployment](https://img.shields.io/badge/render-live-success.svg)](https://joineazy-frontend-p1n3.onrender.com/)
 
 A production-style, role-based academic platform built for the **Joineazy Full Stack Developer Internship Assessment**. Designed with enterprise SaaS aesthetics, normalized PostgreSQL relational modeling, JWT authentication, and an audited two-step declaration workflow for OneDrive assignment deliverables.
+
+### 🌐 Live Production Links
+- **Live Web Application (Frontend):** [https://joineazy-frontend-p1n3.onrender.com/](https://joineazy-frontend-p1n3.onrender.com/)
+- **Live REST API Health (Backend):** [https://joineazy-backend-n8ep.onrender.com/api/health](https://joineazy-backend-n8ep.onrender.com/api/health)
+- **Source Code Repository:** [https://github.com/Govind-yada/Group-Ass_Managment_System](https://github.com/Govind-yada/Group-Ass_Managment_System)
 
 ---
 
