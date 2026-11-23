@@ -2,7 +2,11 @@ import axios from 'axios';
 
 const getBaseURL = () => {
   if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
+    const raw = import.meta.env.VITE_API_URL.trim();
+    if (raw.startsWith('http://') || raw.startsWith('https://')) {
+      return raw.endsWith('/api') ? raw : `${raw.replace(/\/+$/, '')}/api`;
+    }
+    return `https://${raw.replace(/\/+$/, '')}/api`;
   }
   if (typeof window !== 'undefined' && window.location.hostname.includes('onrender.com')) {
     return 'https://joineazy-backend.onrender.com/api';
