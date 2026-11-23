@@ -4,6 +4,7 @@
 [![Backend Tests](https://img.shields.io/badge/tests-10%20passed-success.svg)]()
 [![Stack](https://img.shields.io/badge/stack-React%20%7C%20Express%20%7C%20PostgreSQL%20%7C%20Prisma-indigo.svg)]()
 [![License](https://img.shields.io/badge/license-ISC-blue.svg)]()
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Govind-yada/Group-Ass_Managment_System)
 
 A production-style, role-based academic platform built for the **Joineazy Full Stack Developer Internship Assessment**. Designed with enterprise SaaS aesthetics, normalized PostgreSQL relational modeling, JWT authentication, and an audited two-step declaration workflow for OneDrive assignment deliverables.
 
@@ -584,32 +585,66 @@ The database is pre-seeded with realistic sample accounts. You can use the **Qui
 
 ---
 
-## 14. Production Cloud Deployment Guide
+## 14. Deploying on Render (Recommended Cloud Platform)
 
-Joineazy is architected to deploy easily to production cloud platforms:
+Joineazy includes a pre-configured Infrastructure-as-Code Blueprint (`render.yaml`) for one-click deployment of the entire stack (PostgreSQL Database, Node/Express Backend, and React Vite Frontend).
 
-### 1. Database (Hosted PostgreSQL)
-- Provision a PostgreSQL database on **Supabase**, **Neon**, **AWS RDS**, or **Railway**.
-- Set the connection string in your backend environment:
-  ```env
-  DATABASE_URL=postgresql://<user>:<password>@<host>:5432/<dbname>?sslmode=require
-  ```
+### Option A: One-Click Deploy Button (Fastest)
 
-### 2. Backend API Deployment (Render / Railway / Fly.io / AWS ECS)
-- Deploy using the provided `backend/Dockerfile` or as a Node.js web service.
-- Set environment variables:
-  - `PORT=5000`
-  - `NODE_ENV=production`
-  - `DATABASE_URL=<your-hosted-postgres-url>`
-  - `JWT_SECRET=<strong-random-secret-key>`
-  - `CLIENT_URL=https://<your-frontend-domain>.com`
+Click the button below to deploy the entire stack to Render:
 
-### 3. Frontend SPA Deployment (Vercel / Netlify / Cloudflare Pages)
-- Build command: `npm run build`
-- Output directory: `dist`
-- Set environment variable:
-  - `VITE_API_URL=https://<your-backend-domain>.com/api`
-- Configure SPA rewrite rules (`/*` -> `/index.html`) using the included `nginx.conf` or platform redirects file.
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Govind-yada/Group-Ass_Managment_System)
+
+### Option B: Deploy via Render Dashboard (Blueprint)
+
+1. Sign in to your [Render Dashboard](https://dashboard.render.com).
+2. Click **New +** at the top right and select **Blueprint**.
+3. Connect your GitHub account and select the repository: `Govind-yada/Group-Ass_Managment_System`.
+4. Render automatically parses `render.yaml` and sets up:
+   - **`joineazy-postgres`**: Managed PostgreSQL 15 database instance (Free tier).
+   - **`joineazy-backend`**: Node.js Express API with auto-injected `DATABASE_URL`, auto-running migrations and seeds.
+   - **`joineazy-frontend`**: Static Site serving the Vite React SPA with SPA rewrite rules (`/*` -> `/index.html`).
+5. Click **Apply**. Render will deploy all three services within 2–3 minutes.
+
+### Option C: Manual Service Configuration on Render
+
+If you prefer to configure each service manually:
+
+#### 1. PostgreSQL Database
+- **New +** -> **PostgreSQL**
+- Name: `joineazy-postgres`
+- Database: `joineazy_db`
+- User: `joineazy_user`
+- Plan: `Free`
+- Copy the **Internal Database URL** once created.
+
+#### 2. Backend Web Service
+- **New +** -> **Web Service**
+- Connect `Govind-yada/Group-Ass_Managment_System`
+- Root Directory: `backend`
+- Environment: `Node`
+- Build Command: `npm install && npm run build`
+- Start Command: `npm start`
+- Add Environment Variables:
+  - `NODE_ENV`: `production`
+  - `PORT`: `5000`
+  - `DATABASE_URL`: *(paste the Internal Database URL)*
+  - `JWT_SECRET`: *(enter any secure random string)*
+  - `JWT_EXPIRES_IN`: `7d`
+  - `CLIENT_URL`: `*`
+
+#### 3. Frontend Static Site
+- **New +** -> **Static Site**
+- Connect `Govind-yada/Group-Ass_Managment_System`
+- Root Directory: `frontend`
+- Build Command: `npm install && npm run build`
+- Publish Directory: `dist`
+- Add Redirect / Rewrite Rule:
+  - Type: `Rewrite`
+  - Source: `/*`
+  - Destination: `/index.html`
+- Add Environment Variable:
+  - `VITE_API_URL`: `https://<your-backend-service-name>.onrender.com/api`
 
 ---
 
