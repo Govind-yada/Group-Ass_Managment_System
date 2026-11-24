@@ -1,16 +1,25 @@
 import axios from 'axios';
 
 const getBaseURL = () => {
-  if (import.meta.env.VITE_API_URL) {
-    const raw = import.meta.env.VITE_API_URL.trim();
-    if (raw.startsWith('http://') || raw.startsWith('https://')) {
-      return raw.endsWith('/api') ? raw : `${raw.replace(/\/+$/, '')}/api`;
+  let url = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.trim() : '';
+
+  // Handle case where Render injects internal service name without domain (e.g. 'joineazy-backend-n8ep')
+  if (url && !url.includes('.') && !url.includes('localhost')) {
+    url = `https://${url}.onrender.com/api`;
+  } else if (url) {
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = `https://${url}`;
     }
-    return `https://${raw.replace(/\/+$/, '')}/api`;
+    url = url.endsWith('/api') ? url : `${url.replace(/\/+$/, '')}/api`;
   }
+
+  if (url) return url;
+
+  // Fallback when hosted on Render
   if (typeof window !== 'undefined' && window.location.hostname.includes('onrender.com')) {
-    return 'https://joineazy-backend.onrender.com/api';
+    return 'https://joineazy-backend-n8ep.onrender.com/api';
   }
+
   return 'http://localhost:5000/api';
 };
 

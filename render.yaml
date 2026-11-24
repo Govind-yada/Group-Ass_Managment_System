@@ -47,7 +47,4 @@ services:
         destination: /index.html
     envVars:
       - key: VITE_API_URL
-        fromService:
-          type: web
-          name: joineazy-backend
-          property: host
+        value: https://joineazy-backend-n8ep.onrender.com/api
